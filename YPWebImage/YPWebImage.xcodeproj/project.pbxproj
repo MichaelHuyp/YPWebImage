@@ -34,6 +34,11 @@
 		4ED3A1E31BAE693F009C7AE4 /* UIView+YPWebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A1E21BAE693F009C7AE4 /* UIView+YPWebCacheOperation.m */; };
 		4ED3A1E61BAE6B2C009C7AE4 /* YPWebImageCombinedOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A1E51BAE6B2C009C7AE4 /* YPWebImageCombinedOperation.m */; };
 		4ED3A1E91BAE9A50009C7AE4 /* YPAutoPurgeCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A1E81BAE9A50009C7AE4 /* YPAutoPurgeCache.m */; };
+		4ED3A2501BAEE59F009C7AE4 /* UIImage+YPMultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A24F1BAEE59F009C7AE4 /* UIImage+YPMultiFormat.m */; };
+		4ED3A2531BAEE75B009C7AE4 /* NSData+YPImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A2521BAEE75B009C7AE4 /* NSData+YPImageContentType.m */; };
+		4ED3A2561BAEE86E009C7AE4 /* UIImage+YPGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A2551BAEE86E009C7AE4 /* UIImage+YPGIF.m */; };
+		4ED3A2591BAEF3FA009C7AE4 /* UIImage+YPForceDecode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A2581BAEF3FA009C7AE4 /* UIImage+YPForceDecode.m */; };
+		4ED3A25C1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED3A25B1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +106,16 @@
 		4ED3A1E51BAE6B2C009C7AE4 /* YPWebImageCombinedOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPWebImageCombinedOperation.m; sourceTree = "<group>"; };
 		4ED3A1E71BAE9A50009C7AE4 /* YPAutoPurgeCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YPAutoPurgeCache.h; sourceTree = "<group>"; };
 		4ED3A1E81BAE9A50009C7AE4 /* YPAutoPurgeCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPAutoPurgeCache.m; sourceTree = "<group>"; };
+		4ED3A24E1BAEE59F009C7AE4 /* UIImage+YPMultiFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+YPMultiFormat.h"; sourceTree = "<group>"; };
+		4ED3A24F1BAEE59F009C7AE4 /* UIImage+YPMultiFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+YPMultiFormat.m"; sourceTree = "<group>"; };
+		4ED3A2511BAEE75B009C7AE4 /* NSData+YPImageContentType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+YPImageContentType.h"; sourceTree = "<group>"; };
+		4ED3A2521BAEE75B009C7AE4 /* NSData+YPImageContentType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+YPImageContentType.m"; sourceTree = "<group>"; };
+		4ED3A2541BAEE86E009C7AE4 /* UIImage+YPGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+YPGIF.h"; sourceTree = "<group>"; };
+		4ED3A2551BAEE86E009C7AE4 /* UIImage+YPGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+YPGIF.m"; sourceTree = "<group>"; };
+		4ED3A2571BAEF3FA009C7AE4 /* UIImage+YPForceDecode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+YPForceDecode.h"; sourceTree = "<group>"; };
+		4ED3A2581BAEF3FA009C7AE4 /* UIImage+YPForceDecode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+YPForceDecode.m"; sourceTree = "<group>"; };
+		4ED3A25A1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YPWebImageDownloaderOperation.h; sourceTree = "<group>"; };
+		4ED3A25B1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPWebImageDownloaderOperation.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -198,6 +213,16 @@
 				4ED3A1E51BAE6B2C009C7AE4 /* YPWebImageCombinedOperation.m */,
 				4ED3A1E71BAE9A50009C7AE4 /* YPAutoPurgeCache.h */,
 				4ED3A1E81BAE9A50009C7AE4 /* YPAutoPurgeCache.m */,
+				4ED3A24E1BAEE59F009C7AE4 /* UIImage+YPMultiFormat.h */,
+				4ED3A24F1BAEE59F009C7AE4 /* UIImage+YPMultiFormat.m */,
+				4ED3A2511BAEE75B009C7AE4 /* NSData+YPImageContentType.h */,
+				4ED3A2521BAEE75B009C7AE4 /* NSData+YPImageContentType.m */,
+				4ED3A2541BAEE86E009C7AE4 /* UIImage+YPGIF.h */,
+				4ED3A2551BAEE86E009C7AE4 /* UIImage+YPGIF.m */,
+				4ED3A2571BAEF3FA009C7AE4 /* UIImage+YPForceDecode.h */,
+				4ED3A2581BAEF3FA009C7AE4 /* UIImage+YPForceDecode.m */,
+				4ED3A25A1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.h */,
+				4ED3A25B1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.m */,
 			);
 			path = YPWebImage;
 			sourceTree = "<group>";
@@ -353,12 +378,17 @@
 				4E183B801BADACCC00F8081D /* NSObject+MJKeyValue.m in Sources */,
 				4E183B7B1BADACCC00F8081D /* MJProperty.m in Sources */,
 				4E183B621BADACAF00F8081D /* App.m in Sources */,
+				4ED3A2561BAEE86E009C7AE4 /* UIImage+YPGIF.m in Sources */,
+				4ED3A2591BAEF3FA009C7AE4 /* UIImage+YPForceDecode.m in Sources */,
 				4E183B7F1BADACCC00F8081D /* NSObject+MJCoding.m in Sources */,
 				4ED3A1E91BAE9A50009C7AE4 /* YPAutoPurgeCache.m in Sources */,
 				4E183B9B1BADBAD000F8081D /* YPWebImageDownloader.m in Sources */,
 				4E183B7A1BADACCC00F8081D /* MJFoundation.m in Sources */,
 				4E183B981BADBA9C00F8081D /* YPImageCache.m in Sources */,
 				4ED3A1E31BAE693F009C7AE4 /* UIView+YPWebCacheOperation.m in Sources */,
+				4ED3A2531BAEE75B009C7AE4 /* NSData+YPImageContentType.m in Sources */,
+				4ED3A25C1BAF09B6009C7AE4 /* YPWebImageDownloaderOperation.m in Sources */,
+				4ED3A2501BAEE59F009C7AE4 /* UIImage+YPMultiFormat.m in Sources */,
 				4ED3A1E61BAE6B2C009C7AE4 /* YPWebImageCombinedOperation.m in Sources */,
 				4E183B821BADACCC00F8081D /* NSString+MJExtension.m in Sources */,
 				4E183B5E1BADAC9C00F8081D /* main.m in Sources */,

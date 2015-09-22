@@ -10,16 +10,19 @@
 #import <UIKit/UIKit.h>
 
 #if OS_OBJECT_USE_OBJC
-#undef SDDispatchQueueRelease
-#undef SDDispatchQueueSetterSementics
-#define SDDispatchQueueRelease(q)
-#define SDDispatchQueueSetterSementics strong
+#undef YPDispatchQueueRelease
+#undef YPDispatchQueueSetterSementics
+#define YPDispatchQueueRelease(q)
+#define YPDispatchQueueSetterSementics strong
 #else
-#undef SDDispatchQueueRelease
-#undef SDDispatchQueueSetterSementics
-#define SDDispatchQueueRelease(q) (dispatch_release(q))
-#define SDDispatchQueueSetterSementics assign
+#undef YPDispatchQueueRelease
+#undef YPDispatchQueueSetterSementics
+#define YPDispatchQueueRelease(q) (dispatch_release(q))
+#define YPDispatchQueueSetterSementics assign
 #endif
+
+/** 内联函数必须写这句话才可以被外界访问 */
+extern UIImage *YPScaledImageForKey(NSString *key, UIImage *image);
 
 typedef void(^YPWebImageNoParamsBlock)();
 

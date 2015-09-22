@@ -102,4 +102,9 @@ typedef void(^YPWebImageQueryCompletedBlock)(UIImage *image, YPImageCacheType ca
  */
 - (void)cleanDiskWithCompletionBlock:(YPWebImageNoParamsBlock)completionBlock;
 
+/**
+ *  存储一张图片到内存或可选的沙盒根据一个关键字
+ */
+- (void)storeImage:(UIImage *)image recalculateFromImage:(BOOL)recalculate imageData:(NSData *)imageData forKey:(NSString *)key toDisk:(BOOL)toDisk;
+
 @end

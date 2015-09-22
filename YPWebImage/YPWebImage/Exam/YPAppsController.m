@@ -10,6 +10,7 @@
 #import "YPAppsController.h"
 #import "App.h"
 #import "MJExtension.h"
+#import "UIImageView+YPWebCache.h"
 
 @interface YPAppsController ()
 /**
@@ -63,7 +64,7 @@
     App *app = self.apps[indexPath.row];
     cell.textLabel.text = app.name;
 
-    
+    [cell.imageView setImageWithURL:[NSURL URLWithString:app.cover_image] placeholderImage:[UIImage imageNamed:@"gem"]];
     return cell;
 }
 

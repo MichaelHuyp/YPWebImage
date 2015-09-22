@@ -8,6 +8,8 @@
 
 #import "YPImageCache.h"
 #import "YPAutoPurgeCache.h"
+#import "UIImage+YPMultiFormat.h"
+#import "UIImage+YPForceDecode.h"
 #import <CommonCrypto/CommonDigest.h>
 
 /** 默认的缓存时间为1周 */
@@ -36,7 +38,7 @@ BOOL ImageDataHasPNGPreffix(NSData *data) {
 /**
  *  计算图片的缓存花费(容量)
  */
-FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
+FOUNDATION_STATIC_INLINE NSUInteger YPCacheCostForImage(UIImage *image) {
     // 图片的高度 * 图片的宽度 * 图片的伸缩度 * 图片的伸缩度
     return image.size.height * image.size.width * image.scale * image.scale;
 }
@@ -64,14 +66,14 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
 }
 
 /** 单例 */
-static id _instance;
 + (YPImageCache *)sharedImageCache
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _instance = [[self alloc] init];
+    static dispatch_once_t once;
+    static id instance;
+    dispatch_once(&once, ^{
+        instance = [self new];
     });
-    return _instance;
+    return instance;
 }
 
 #pragma mark - init -
@@ -154,7 +156,7 @@ static id _instance;
     // 移除所有监听
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     // 释放缓存队列
-    SDDispatchQueueRelease(_ioQueue);
+    YPDispatchQueueRelease(_ioQueue);
 }
 
 /**
@@ -201,10 +203,20 @@ static id _instance;
         @autoreleasepool { // 因为是异步执行无法获取主线程的自动释放池需要手动添加
             // 根据key在沙盒缓存中读取这个图片
             UIImage *diskImage = [self diskImageForKey:key];
+            if (diskImage && self.shouldCacheImagesInMemory) { // 如果沙盒中有图片并且内存缓存的开关为YES
+                // 计算一下图片的缓存花费(容量)
+                NSUInteger cost = YPCacheCostForImage(diskImage);
+                // 将沙盒中读取的图片和key值以及图片缓存容量存到NSCache中
+                [self.memCache setObject:diskImage forKey:key cost:cost];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{ // 回到主队列中执行
+                // 调用doneBlock传入沙盒中读取的图片,以及缓存策略为从沙盒中读取
+                doneBlock(diskImage, YPImageCacheTypeDisk);
+            });
         }
     });
-    
-    return nil;
+    // 返回刚才创建的空操作
+    return operation;
 }
 
 /**
@@ -218,11 +230,34 @@ static id _instance;
  *  从沙盒中获取图片
  */
 - (UIImage *)diskImageForKey:(NSString *)key {
+    
     // 根据传入的key在沙盒中查找图片数据
     NSData *data = [self diskImageDataBySearchingAllPathsForKey:key];
     
-#warning YPTODO
+    if (data) { // 如果有数据
+        
+        // 根据数据设置图片
+        UIImage *image = [UIImage imageWithMultiFormatData:data];
+        
+        // 根据传入的key值重新设置图片的伸缩度
+        image = [self scaledImageForKey:key image:image];
+        
+        if (self.shouldDecompressImages) { // 默认为YES
+            // 对图片进行解码操作
+            image = [UIImage decodedImageWithImage:image];
+        }
+        // 返回这个图片
+        return image;
+    } else { // 如果沙盒中没有数据直接返回nil
+        return nil;
+    }
+}
 
+/**
+ *  根据传入的key值重新设置图片的伸缩度
+ */
+- (UIImage *)scaledImageForKey:(NSString *)key image:(UIImage *)image {
+    return YPScaledImageForKey(key, image);
 }
 
 /**
@@ -427,6 +462,99 @@ static id _instance;
         [application endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
     }];
+}
+
+/**
+ *  重新计算转换的图像并缓存起来
+ */
+- (void)storeImage:(UIImage *)image recalculateFromImage:(BOOL)recalculate imageData:(NSData *)imageData forKey:(NSString *)key toDisk:(BOOL)toDisk
+{
+    if (!image || !key) { // 如果图像没有值或者key没有值直接返回
+        return;
+    }
+    if (self.shouldCacheImagesInMemory) { // 如果内存缓存是可行的
+        // 计算图片的缓存花费(容量)
+        NSUInteger cost = YPCacheCostForImage(image);
+        // 将图片缓存到NSCache中
+        [self.memCache setObject:image forKey:key cost:cost];
+    }
+    
+    if (toDisk) { // 如果沙盒缓存是可行的
+        dispatch_async(self.ioQueue, ^{ // 根据缓存队列开启一个异步线程
+            
+            // 获取图像数据
+            NSData *data = imageData;
+            
+            // 如果有图片并且
+            // 图片被翻转了或者数据位空
+            if (image && (recalculate || !data)) {
+#if TARGET_OS_IPHONE // 当为Iphone时
+                /**
+                 *  我们需要确定图像是PNG还是JPEG
+                 *  PNG类的图片更容易被检测,因为他们有独特的签名
+                 *  第八位字节总是包含着以下的十进制数值: 137 80 78 71 13 10 26 10
+                 *
+                 *  如果图片数据为空（也就是说,如果想要直接保存UIImage或者在下载之后转换）
+                 *  并且图像有一个alpha通道，我们会考虑它PNG，以避免失去透明度
+                 */
+                
+                // 获取image的CGImageGetAlphaInfo
+                int alphaInfo = CGImageGetAlphaInfo(image.CGImage);
+                
+                /**
+                 *  当alphaInfo为以下枚举中的一种
+                 *  kCGImageAlphaNone,kCGImageAlphaNoneSkipFirst,kCGImageAlphaNoneSkipLast
+                 *  这个hasAlpha值为NO
+                 */
+                BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
+                                  alphaInfo == kCGImageAlphaNoneSkipFirst ||
+                                  alphaInfo == kCGImageAlphaNoneSkipLast);
+                // 根据这个BOOL值判断图片是否为PNG
+                BOOL imageIsPng = hasAlpha;
+                
+                // But if we have an image data, we will look at the preffix
+                // 但是如果我们有图片数据,我们将看一下前缀
+                if ([imageData length] >= [kPNGSignatureData length]) { // 如果图片二进制数据的长度大于PNG的署名长度
+                    // 根据数据的前缀判断图片是否为PNG
+                    imageIsPng = ImageDataHasPNGPreffix(imageData);
+                }
+                
+                if (imageIsPng) { // 如果图片是PNG图片
+                    // 将图片以PNG格式解析成二进制数据
+                    data = UIImagePNGRepresentation(image);
+                }
+                else { // 如果图片不是PNG图片
+                    // 将图片以JPEG格式解析成二进制数据
+                    data = UIImageJPEGRepresentation(image, (CGFloat)1.0);
+                }
+#endif
+            }
+            
+            if (data) { // 如果有数据
+                // 利用文件管理者查找一下沙盒缓存路径是否存在
+                if (![_fileManager fileExistsAtPath:_diskCachePath]) { // 如果路径不存在
+                    // 创建沙盒缓存路径
+                    [_fileManager createDirectoryAtPath:_diskCachePath withIntermediateDirectories:YES attributes:nil error:NULL];
+                }
+                
+                // get cache Path for image key
+                // 根据图片的key以及沙盒缓存路径获取默认的缓存路径
+                NSString *cachePathForKey = [self defaultCachePathForKey:key];
+                // transform to NSUrl
+                // 将缓存路径字符串转换成NSUrl
+                NSURL *fileURL = [NSURL fileURLWithPath:cachePathForKey];
+                // 将图片数据保存到沙盒缓存路径上
+                [_fileManager createFileAtPath:cachePathForKey contents:data attributes:nil];
+                
+                // disable iCloud backup 关闭iCloud备份
+                if (self.shouldDisableiCloud) { // 如果不允许iCloud备份(默认不允许)
+                    // 不采用备份设置
+                    [fileURL setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:nil];
+                    
+                }
+            }
+        });
+    }
 }
 
 
