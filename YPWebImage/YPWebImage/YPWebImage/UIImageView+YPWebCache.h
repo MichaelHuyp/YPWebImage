@@ -21,6 +21,11 @@
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder;
 
 /**
+ *  就算你输成字符串我也不怪你
+ */
+- (void)setImageWithURLStr:(NSString *)url placeholderImage:(UIImage *)placeholder;
+
+/**
  * 取消当前图片的下载
  */
 - (void)cancelCurrentImageLoad;

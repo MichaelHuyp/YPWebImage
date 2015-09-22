@@ -63,6 +63,14 @@ static char imageURLKey;
 }
 
 /**
+ *  就算你输成字符串我也不怪你
+ */
+- (void)setImageWithURLStr:(NSString *)url placeholderImage:(UIImage *)placeholder
+{
+    [self setImageWithURL:[NSURL URLWithString:url] placeholderImage:placeholder];
+}
+
+/**
  *  取消当前图片的下载
  */
 - (void)cancelCurrentImageLoad

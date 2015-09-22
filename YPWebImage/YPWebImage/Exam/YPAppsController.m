@@ -64,7 +64,10 @@
     App *app = self.apps[indexPath.row];
     cell.textLabel.text = app.name;
 
-    [cell.imageView setImageWithURL:[NSURL URLWithString:app.cover_image] placeholderImage:[UIImage imageNamed:@"gem"]];
+    
+    [cell.imageView setImageWithURLStr:app.cover_image placeholderImage:[UIImage imageNamed:@"gem"]];
+    
+    
     return cell;
 }
 
